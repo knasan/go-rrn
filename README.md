@@ -31,5 +31,5 @@ make
 
 ## TODO
 
-[ ] files and/or directories can optionally be excluded
-[ ] more than one directory depth
+- [ ] files and/or directories can optionally be excluded
+- [ ] more than one directory depth
