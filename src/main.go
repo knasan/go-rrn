@@ -14,13 +14,13 @@ var (
 	author                   = "smk (github@knasan.de)"
 	license                  = "MIT"
 	paths                    pathslice
-	schar, rchar             string
+	searchChar, replaceChar  string
 	verbose, dry, sl, sa, sv bool
 )
 
 // usage
 var usage = func() {
-	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+	_, _ = fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 
 	flag.PrintDefaults()
 	os.Exit(0)
@@ -34,7 +34,8 @@ func (p *pathslice) String() string {
 	return fmt.Sprintf("%v", *p)
 }
 
-// flag.Value - append to type pathslice return error
+// Set
+//flag.Value - append to type pathslice return error
 func (p *pathslice) Set(v string) error {
 	*p = append(*p, v)
 	return nil
@@ -61,10 +62,10 @@ func initialize() {
 	flag.Var(&paths, "d", "working directory (can be specified multiple times)")
 
 	// find char
-	flag.StringVar(&schar, "s", "", "char to search - default empty string")
+	flag.StringVar(&searchChar, "s", "", "char to search - default empty string")
 
 	// replace char
-	flag.StringVar(&rchar, "r", "", "char to replace - default empty string")
+	flag.StringVar(&replaceChar, "r", "", "char to replace - default empty string")
 
 	// verbose
 	flag.BoolVar(&verbose, "v", false, "verbose")
@@ -106,16 +107,16 @@ func initialize() {
 		os.Exit(0)
 	}
 
-	if rchar == schar {
+	if replaceChar == searchChar {
 		panic("search and replace is the same character")
 	}
 
-	if rchar == "" {
-		rchar = " "
+	if replaceChar == "" {
+		replaceChar = " "
 	}
 
-	if schar == "" {
-		schar = " "
+	if searchChar == "" {
+		searchChar = " "
 	}
 
 	if len(paths) == 0 {
@@ -148,7 +149,7 @@ func replace() {
 				panic(err)
 			}
 			for _, v := range s {
-				nn := strings.ReplaceAll(v.Name(), schar, rchar)
+				nn := strings.ReplaceAll(v.Name(), searchChar, replaceChar)
 
 				// show when verbose
 				if verbose {
@@ -165,7 +166,7 @@ func replace() {
 				}
 			}
 		} else {
-			nn := strings.ReplaceAll(f.Name(), schar, rchar)
+			nn := strings.ReplaceAll(f.Name(), searchChar, replaceChar)
 			if verbose {
 				fmt.Printf("from %s to %s\n", f.Name(), nn)
 			}
