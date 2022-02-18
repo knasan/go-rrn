@@ -59,27 +59,29 @@ func run(path string) ([]repl, error) {
 	}
 	for _, d := range list {
 		if d.IsDir() {
-			depthcount += 1
+			// splits path by "/" (Unix), length + 1 for the specified directory gives the depth
+			depthcount = len(strings.Split(path, "/")) + 1
 
-			if depth != 0 {
-				if depthcount == depth+1 {
-					break
+			if depthcount > depth {
+				if depth != 0 {
+					continue
 				}
 			}
+
 			_, err := run(filepath.Join(path, d.Name()))
 			if err != nil {
 				panic(err)
 			}
 
 		} else {
+
+			// fmt.Println("File:", d.Name(), "depth:", depth, "depthcount:", depthcount, "path:", path)
 			from := filepath.Join(path, d.Name())
 			to := filepath.Join(path, strings.ReplaceAll(d.Name(), searchChar, replaceChar))
 
 			if from == to {
 				continue
 			}
-
-			// fmt.Println("add - ", from, to)
 
 			rpl := repl{from: from, to: to}
 			replist = append(replist, rpl)
