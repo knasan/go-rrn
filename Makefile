@@ -1,6 +1,11 @@
-production:
-	go build src/main.go -ldflags "-s -w" -o rrn
-	upx rrn
+$(shell mkdir -p build)
+
+prod:
+	go build -o build/rrn  -ldflags "-s -w" src/*.go
+	upx build/rrn
 
 dev:
-	go build src/main.go -o dev-rrn
+	go build -o build/dev-rrn --race src/*.go
+
+run:
+	go run --race src/*.go

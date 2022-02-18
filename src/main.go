@@ -3,19 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path/filepath"
-	"strings"
 )
 
 var (
-	version                  = "0.0.1"
+	version                  = "0.0.2"
 	author                   = "smk (github@knasan.de)"
 	license                  = "MIT"
 	paths                    pathslice
 	searchChar, replaceChar  string
 	verbose, dry, sl, sa, sv bool
+	depth                    int
 )
 
 // usage
@@ -29,13 +27,14 @@ var usage = func() {
 // define a type named pathslice as slice of strings
 type pathslice []string
 
+// String
 // flag.Value interface - return string
 func (p *pathslice) String() string {
 	return fmt.Sprintf("%v", *p)
 }
 
 // Set
-//flag.Value - append to type pathslice return error
+// flag.Value - append to type pathslice return error
 func (p *pathslice) Set(v string) error {
 	*p = append(*p, v)
 	return nil
@@ -72,6 +71,9 @@ func initialize() {
 
 	// dry run
 	flag.BoolVar(&dry, "D", false, "dry-run")
+
+	// max-depth
+	flag.IntVar(&depth, "depth", 0, "max depth (0 = disable)")
 
 	// show
 	// author
@@ -121,73 +123,6 @@ func initialize() {
 
 	if len(paths) == 0 {
 		panic("required argument path (-d) is missing")
-	}
-}
-
-// handler for panic
-func handler() {
-	if r := recover(); r != nil {
-		fmt.Println(r)
-		flag.PrintDefaults()
-	}
-}
-
-// replace all files (recursive)
-func replace() {
-	for _, p := range paths {
-		if _, err := os.Lstat(p); err != nil {
-			panic(err)
-		}
-
-		f, err := os.Stat(p)
-		if err != nil {
-			panic("no such file or directory")
-		}
-		if f.IsDir() {
-			s, err := ioutil.ReadDir(p)
-			if err != nil {
-				panic(err)
-			}
-			for _, v := range s {
-				nn := strings.ReplaceAll(v.Name(), searchChar, replaceChar)
-
-				// show when verbose
-				if verbose {
-					fmt.Printf("from %s to %s\n", v.Name(), nn)
-				}
-
-				// using dry run continue
-				if dry {
-					continue
-				}
-
-				if err := os.Rename(filepath.Join(p, v.Name()), filepath.Join(p, nn)); err != nil {
-					panic(err)
-				}
-			}
-		} else {
-			nn := strings.ReplaceAll(f.Name(), searchChar, replaceChar)
-			if verbose {
-				fmt.Printf("from %s to %s\n", f.Name(), nn)
-			}
-
-			if dry {
-				continue
-			}
-
-			var from, to string
-			if p == f.Name() {
-				from = f.Name()
-				to = nn
-			} else {
-				from = filepath.Join(p, f.Name())
-				to = fmt.Sprint(filepath.Join(p, nn))
-			}
-
-			if err := os.Rename(from, to); err != nil {
-				panic(err)
-			}
-		}
 	}
 }
 
