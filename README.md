@@ -2,14 +2,15 @@
 
 ## Description
 
-[de] RRN - Recursive Rename ist ein kleines Kommandozeilen Tool, dass Verzeichnisse und Dateien durchsucht und durch das angegebene Zeichen ersetzt.
+[de] RRN - Recursive Rename ist ein kleines Kommandozeilen-Tool, dass Verzeichnisse und Dateien durchsucht, 
+und durch das angegebene Zeichen ersetzt.
 
-[en] RRN - Recursive Rename is a small command line tool that searches directories and files and replaces them with the given character.
+[en] RRN - Recursive Rename is a small command line tool that searches directories and files and replaces them
+with the given character.
 
 ## Dependencies
 
-go and make for building from source
-upx for binary compression
+go and make for building from source, upx for binary compression when using my Makefile.
 
 ## Build from source
 
@@ -19,7 +20,7 @@ cd go-rrn
 make
 ```
 
-[de] Um all Leerzeichen durch einen unterstrich zu ersetzten reicht ein einfacher Aufruf.
+[de] Um alle Leerzeichen durch einen unterstrich zu ersetzten reicht ein einfacher Aufruf.
 
 [en] To replace all spaces with an underscore, simply call.
 
