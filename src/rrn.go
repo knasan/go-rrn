@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,11 +13,14 @@ type repl struct {
 	to   string
 }
 
+var depthcount int
+var replist []repl
+
 // handler for panic
 func handler() {
 	if r := recover(); r != nil {
 		fmt.Println(r)
-		flag.PrintDefaults()
+		// flag.PrintDefaults()
 	}
 }
 
@@ -36,43 +38,53 @@ func replace() {
 // reverse replace with depth limit go backwards.
 func reverse(r []repl) {
 	c := len(r)
-	var limit int
 	for i := range r {
 		cc := c - i - 1
-		fi, err := os.Stat(r[cc].from)
-		if err == nil {
-			if fi.IsDir() {
-				limit += 1
-			}
-		}
-		if limit == depth {
-			break
-		}
 		if verbose {
 			fmt.Println("From: ", r[cc].from, "to:", r[cc].to)
 		}
-		if err := os.Rename(r[cc].from, r[cc].to); err != nil {
-			panic(err)
+		if !dry {
+			if err := os.Rename(r[cc].from, r[cc].to); err != nil {
+				panic(err)
+			}
 		}
 	}
 }
 
 // run fill the repl type
-func run(path string) (replist []repl, err error) {
-	err = filepath.Walk(path,
-		func(path string, info os.FileInfo, err error) error {
+func run(path string) ([]repl, error) {
+	list, err := os.ReadDir(path)
+	if err != nil {
+		panic(err)
+	}
+	for _, d := range list {
+		if d.IsDir() {
+			depthcount += 1
+
+			if depth != 0 {
+				if depthcount == depth+1 {
+					break
+				}
+			}
+			_, err := run(filepath.Join(path, d.Name()))
 			if err != nil {
-				return err
+				panic(err)
 			}
-			first := strings.TrimRight(filepath.Clean(path), info.Name())
-			last := path[strings.LastIndex(path, "/")+1:]
-			last = strings.ReplaceAll(last, searchChar, replaceChar)
-			to := filepath.Join(first, last)
-			if path != to {
-				r := repl{from: path, to: to}
-				replist = append(replist, r)
+
+		} else {
+			from := filepath.Join(path, d.Name())
+			to := filepath.Join(path, strings.ReplaceAll(d.Name(), searchChar, replaceChar))
+
+			if from == to {
+				continue
 			}
-			return nil
-		})
+
+			// fmt.Println("add - ", from, to)
+
+			rpl := repl{from: from, to: to}
+			replist = append(replist, rpl)
+		}
+	}
+
 	return replist, err
 }
