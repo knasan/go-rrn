@@ -34,4 +34,4 @@ make
 
 - [ ] files and/or directories can optionally be excluded
 - [x] more than one directory depth (and with limit)
-- [ ] interactive - Request confirmation before attempting to rename any directory or file
+- [x] interactive - Request confirmation before attempting to rename any directory or file (since version 0.0.4)
