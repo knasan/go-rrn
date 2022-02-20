@@ -7,13 +7,13 @@ import (
 )
 
 var (
-	version                  = "0.0.3"
-	author                   = "smk (github@knasan.de)"
-	license                  = "MIT"
-	paths                    pathslice
-	searchChar, replaceChar  string
-	verbose, dry, sl, sa, sv bool
-	depth                    int
+	version                                                         = "0.0.4"
+	author                                                          = "smk (github@knasan.de)"
+	license                                                         = "MIT"
+	paths                                                           pathslice
+	searchChar, replaceChar                                         string
+	verbose, dry, showlicense, showauthor, showversion, interactive bool
+	depth                                                           int
 )
 
 // usage
@@ -77,11 +77,14 @@ func initialize() {
 
 	// show
 	// author
-	flag.BoolVar(&sa, "author", false, "show author (and others defined) and exit")
+	flag.BoolVar(&showauthor, "author", false, "show author (and others defined) and exit")
 	// licnese
-	flag.BoolVar(&sl, "license", false, "show license (and others defined) and exit")
+	flag.BoolVar(&showlicense, "license", false, "show license (and others defined) and exit")
 	// version
-	flag.BoolVar(&sv, "version", false, "show version (and others defined) and exit")
+	flag.BoolVar(&showversion, "version", false, "show version (and others defined) and exit")
+
+	// interactive
+	flag.BoolVar(&interactive, "i", false, "request confirmation before attempting to rename any directory or file")
 
 	flag.Parse()
 
@@ -92,15 +95,15 @@ func initialize() {
 
 	// use one or multiple show (version, author, license), set show to true and exit this application
 	show := false
-	if sa {
+	if showauthor {
 		sauthor()
 		show = true
 	}
-	if sl {
+	if showlicense {
 		slicense()
 		show = true
 	}
-	if sv {
+	if showversion {
 		sversion()
 		show = true
 	}

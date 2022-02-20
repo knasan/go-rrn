@@ -2,7 +2,7 @@
 
 ## Description
 
-[de] RRN - Recursive Rename ist ein kleines Kommandozeilen-Tool, dass Verzeichnisse und Dateien durchsucht, 
+[de] RRN - Recursive Rename ist ein kleines Kommandozeilen-Tool, dass Verzeichnisse und Dateien durchsucht,
 und durch das angegebene Zeichen ersetzt.
 
 [en] RRN - Recursive Rename is a small command line tool that searches directories and files and replaces them
@@ -34,3 +34,4 @@ make
 
 - [ ] files and/or directories can optionally be excluded
 - [x] more than one directory depth (and with limit)
+- [ ] interactive - Request confirmation before attempting to rename any directory or file
