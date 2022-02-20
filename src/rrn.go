@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -37,15 +38,37 @@ func replace() {
 
 // reverse replace with depth limit go backwards.
 func reverse(r []repl) {
+	var ign bool
 	c := len(r)
 	for i := range r {
 		cc := c - i - 1
 		if verbose {
 			fmt.Println("From: ", r[cc].from, "to:", r[cc].to)
 		}
-		if !dry {
-			if err := os.Rename(r[cc].from, r[cc].to); err != nil {
+
+		if interactive {
+			fmt.Println("rename? ")
+			reader := bufio.NewReader(os.Stdin)
+			t, err := reader.ReadString('\n')
+			if err != nil {
 				panic(err)
+			}
+			t = strings.Trim(t, "\n")
+			switch t {
+			case "y", "Y":
+				ign = false
+			default:
+				ign = true
+			}
+		} else {
+			ign = false
+		}
+
+		if !dry {
+			if !ign {
+				if err := os.Rename(r[cc].from, r[cc].to); err != nil {
+					panic(err)
+				}
 			}
 		}
 	}
